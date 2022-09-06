@@ -2,7 +2,7 @@ import java.util.Locale;
 import java.util.Vector;
 import java.util.Scanner;
 
-public class main {
+public class Main {
     public static void main(String[] args) {
         GameState game_state = new GameState();
         for (int i = 0; i < game_state.rounds; i++) {
@@ -11,7 +11,7 @@ public class main {
         }
     }
     public static Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
-    
+
     public enum Action {
         STAY,
         MOVE_DOWN,
