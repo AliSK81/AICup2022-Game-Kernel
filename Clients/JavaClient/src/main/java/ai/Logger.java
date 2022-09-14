@@ -1,6 +1,7 @@
 package ai;
 
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 public class Logger {
@@ -9,20 +10,21 @@ public class Logger {
 
     public static void init(Integer id) {
         if (out != null) return;
+        File file = new File("../logs/agent." + id + ".log");
         try {
-            out = new PrintWriter(String.format("Clients/logs/Agent-%d.log", id));
-        } catch (FileNotFoundException e) {
-            out.close();
+            file.getParentFile().mkdirs();
+            out = new PrintWriter(file);
+        } catch (IOException e) {
+            if (out != null) out.close();
             e.printStackTrace();
         }
     }
 
     public static <T> void log(T msg) {
-        if (out == null) return;
-        out.println(msg);
+        if (out != null) out.println(msg);
     }
 
     public static void close() {
-        out.close();
+        if (out != null) out.close();
     }
 }
