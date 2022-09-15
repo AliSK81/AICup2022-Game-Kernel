@@ -24,6 +24,13 @@ public class Logger {
         if (out != null) out.println(msg);
     }
 
+    public static <T> void error(T msg) {
+        try (PrintWriter err = new PrintWriter("../logs/err.log")) {
+            err.println(msg);
+        } catch (IOException ignored) {
+        }
+    }
+
     public static void close() {
         if (out != null) out.close();
     }

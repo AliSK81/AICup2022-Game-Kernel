@@ -1,0 +1,16 @@
+package cli;
+
+public enum Action {
+    STAY,
+    MOVE_DOWN,
+    MOVE_UP,
+    MOVE_RIGHT,
+    MOVE_LEFT,
+    UPGRADE_DEFENCE,
+    UPGRADE_ATTACK,
+    LINEAR_ATTACK_DOWN,
+    LINEAR_ATTACK_UP,
+    LINEAR_ATTACK_RIGHT,
+    LINEAR_ATTACK_LEFT,
+    RANGED_ATTACK
+}
