@@ -9,11 +9,12 @@ import static ai.Logger.log;
 public class Game extends GameState {
 
     public Action getAction() {
-        log(currentRound);
+        log(this);
+
         Random random = new Random();
         int randInt = random.nextInt(12);
-        log(this);
         return Action.values()[randInt];
     }
+
 
 }

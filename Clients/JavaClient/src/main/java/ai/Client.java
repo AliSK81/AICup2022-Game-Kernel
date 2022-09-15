@@ -1,11 +1,7 @@
 package ai;
 
 
-import lombok.ToString;
-
-import java.util.Locale;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 public class Client {
     public static Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
@@ -45,7 +41,6 @@ public class Client {
         OUT_OF_MAP
     }
 
-    @ToString
     public static class Point {
 
         public int x;
@@ -55,24 +50,51 @@ public class Client {
             this.x = x;
             this.y = y;
         }
+
+        @Override
+        public String toString() {
+            return "(x=" + x + ", y=" + y + ')';
+        }
     }
 
-    @ToString
     public static class MapTile {
         public MapType type;
         public int data;
         public Point coordinates;
+
+        @Override
+        public String toString() {
+            return "\n\t\t" +
+                    coordinates +
+                    ", " + data +
+                    ", " + type;
+        }
     }
 
-    @ToString
     public static class Map {
         public int width, height;
         public int goldCount;
         public int sightRange;
         Vector<MapTile> grid;
+
+        @Override
+        public String toString() {
+
+            List<MapTile> grid = this.grid.stream()
+                    .filter(tile -> tile.type != MapType.OUT_OF_SIGHT && tile.type != MapType.OUT_OF_MAP)
+                    .sorted(Comparator.comparingInt((MapTile t) -> t.coordinates.x).thenComparing((t -> t.coordinates.y)))
+                    .toList();
+
+            return "\n\tMap{" +
+                    "width=" + width +
+                    ", height=" + height +
+                    ", gold=" + goldCount +
+                    ", vision=" + sightRange +
+                    grid +
+                    "\n\t}\n";
+        }
     }
 
-    @ToString
     public static class GameState {
         public int rounds;
         public int defUpgradeCost, atkUpgradeCost;
@@ -107,6 +129,7 @@ public class Client {
             int x = scanner.nextInt();
             int y = scanner.nextInt();
             location = new Point(x, y); // (row, column)
+            map.grid.clear();
             for (int i = 0; i < map.sightRange * map.sightRange; i++) {
                 MapTile tile = new MapTile();
                 tile.type = MapType.values()[scanner.nextInt()];
@@ -131,6 +154,27 @@ public class Client {
             scanner.nextLine();
 
             Logger.init(agentID);
+        }
+
+        @Override
+        public String toString() {
+            return "Round " + currentRound + " {" +
+                    "\n\trounds=" + rounds +
+                    "\n\tlocation=" + location +
+                    "\n\tlastAction=" + lastAction +
+                    "\n\tdefUpgradeCost=" + defUpgradeCost +
+                    "\n\tatkUpgradeCost=" + atkUpgradeCost +
+                    "\n\tcoolDownRate=" + coolDownRate +
+                    "\n\tlinearAttackRange=" + linearAttackRange +
+                    "\n\trangedAttackRadius=" + rangedAttackRadius +
+                    "\n\tattackRatio=" + attackRatio +
+                    "\n\tdefLvl=" + deflvl +
+                    "\n\tatkLvl=" + atklvl +
+                    "\n\twallet=" + wallet +
+                    "\n\tsafeWallet=" + safeWallet +
+                    "\n\twallets=" + wallets +
+                    "\n" + map +
+                    "}\n";
         }
     }
 }
