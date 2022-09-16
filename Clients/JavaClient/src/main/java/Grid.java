@@ -1,32 +1,28 @@
-package ai;
-
-import cli.Map;
-import cli.MapTile;
-import cli.MapType;
-import cli.Point;
-
 import java.util.*;
 
 public class Grid {
 
-    private static final Integer INF = 9999;
+    public static final Integer INF = 9999;
 
-    public static ArrayList<Point> filter = new ArrayList<>();
-    public int[][] D;
-    private int width;
-    private int height;
+    public static Set<Point> filter = new HashSet<>();
 
-    public void initGrid(Map map) {
-        height = map.height;
-        width = map.width;
+    public static int[][] D;
+    public static int width;
+    public static int height;
 
-        D = new int[height][width];
+    public Grid(Map map) {
 
-        for (int i = 0; i < height; i++) {
-            Arrays.fill(D[i], INF);
+        if (D == null) {
+            height = map.height;
+            width = map.width;
+            D = new int[height][width];
+            for (int i = 0; i < height; i++) {
+                Arrays.fill(D[i], INF);
+            }
         }
 
         for (MapTile tile : map.grid) {
+            if (!validTile(tile)) continue;
             int i = tile.coordinates.x;
             int j = tile.coordinates.y;
             D[i][j] = tile.type.ordinal();
@@ -43,7 +39,7 @@ public class Grid {
         return dirs;
     }
 
-    ArrayList<Point> shortestPath(Point start, MapType targetType) {
+    ArrayList<ArrayList<Point>> shortestPaths(Point start, MapType targetType) {
 
         ArrayList<ArrayList<Point>> allPaths = new ArrayList<>();
 
@@ -53,35 +49,43 @@ public class Grid {
         seen.add(start);
 
         while (!queue.isEmpty()) {
-
             ArrayList<Point> path = queue.poll();
 
             Point p = path.get(path.size() - 1);
 
-            if (D[p.x][p.y] == targetType.ordinal()) {
+            if (matches(p, targetType) && allowed(p)) {
                 allPaths.add(new ArrayList<>(path));
             }
 
             for (Point dir : dirs(p)) {
                 if (allowed(dir) && !seen.contains(dir)) {
-                    seen.add(dir);
                     ArrayList<Point> newPath = new ArrayList<>(path);
                     newPath.add(dir);
                     queue.add(newPath);
+                    seen.add(dir);
                 }
             }
         }
 
-        for (ArrayList<Point> path : allPaths) {
-            Logger.log(path);
-        }
+        return allPaths;
+    }
 
-        return allPaths.stream().min(Comparator.comparing(ArrayList::size)).orElse(new ArrayList<>());
+    public boolean matches(Point p, MapType type) {
+        return D[p.x][p.y] == type.ordinal();
     }
 
     public boolean allowed(Point p) {
-        return D[p.x][p.y] != MapType.WALL.ordinal()
-                && !filter.contains(p);
+        return !matches(p, MapType.WALL) && !filter.contains(p);
     }
+
+    public boolean forbidden(Point p) {
+        return !allowed(p);
+    }
+
+    public boolean validTile(MapTile tile) {
+        return tile.type != MapType.OUT_OF_SIGHT && tile.type != MapType.OUT_OF_MAP;
+    }
+
+
 
 }
